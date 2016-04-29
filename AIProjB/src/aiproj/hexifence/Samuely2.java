@@ -3,13 +3,13 @@ package aiproj.hexifence;
 import java.io.PrintStream;
 
 public class Samuely2 implements Player, Piece {
-	char[][] gameBoard;
+	GameBoard gameBoard;
 	int pieceColor;
 	
 	@Override
 	public int init(int n, int p) {
 		try{
-			gameBoard = new char[4*n-1][4*n-1];
+			gameBoard = new GameBoard(n);
 			this.pieceColor = p;
 			return 0;
 		}
