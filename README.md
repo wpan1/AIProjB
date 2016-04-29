@@ -1,7 +1,7 @@
 # AIProjB
 fun times
 
-Tasks to Complete
+#Tasks to Complete
 Make GameBoard class:
 - printBoard() method
 - getWinner() method
