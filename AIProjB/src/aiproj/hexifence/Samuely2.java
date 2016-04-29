@@ -3,14 +3,20 @@ package aiproj.hexifence;
 import java.io.PrintStream;
 
 public class Samuely2 implements Player, Piece {
-	char[][] gameBoard;
+	GameBoard gameBoard;
 	int pieceColor;
+	int oppPieceColor;
 	
 	@Override
 	public int init(int n, int p) {
 		try{
-			gameBoard = new char[4*n-1][4*n-1];
+			gameBoard = new GameBoard(n);
 			this.pieceColor = p;
+			if (p == Piece.BLUE){
+				oppPieceColor = Piece.RED;
+			}else{
+				oppPieceColor = Piece.BLUE;
+			}
 			return 0;
 		}
 		catch(Exception e){
@@ -27,7 +33,14 @@ public class Samuely2 implements Player, Piece {
 	@Override
 	public int opponentMove(Move m) {
 		// TODO Auto-generated method stub
-		return 0;
+		if (!gameBoard.checkCapture(m)){
+			return -1;
+		}
+		gameBoard.update(m, oppPieceColor);
+		if (!gameBoard.checkValid(m)){
+			return -1;
+		}
+		return 1;
 	}
 
 	@Override
