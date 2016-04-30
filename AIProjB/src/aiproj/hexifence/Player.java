@@ -10,6 +10,8 @@ import java.io.PrintStream;
  */
 public interface Player{
 	
+
+	
 	/* This funstion is called by the referee to initialise the player.
 	 *  Return 0 for successful initialization and -1 for failed one.
 	 */
@@ -33,6 +35,8 @@ public interface Player{
 	/* This function when called by referee should return the winner
 	 *	Return -1, 0, 1, 2, 3 for INVALID, EMPTY, BLUE, RED, DEAD respectively
 	 */
+	
+	
 	
 	public int getWinner();
 	
