@@ -13,7 +13,7 @@ public class Move{
 	public int Row;
 	public int Col;	
 	
-	public Move(int row, int col, int p){
+	public Move(int col, int row, int p){
 		this.Row = row;
 		this.Col = col;
 		this.P = p;

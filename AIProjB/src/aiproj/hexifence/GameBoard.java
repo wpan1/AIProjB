@@ -1,5 +1,6 @@
 package aiproj.hexifence;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class GameBoard {
@@ -7,9 +8,50 @@ public class GameBoard {
 	int N;
 	int[][] hexagons;
 	
-	public GameBoard(int n){
+	
+	//Constructor
+	public GameBoard(int n) throws Exception{
 		this.N = n;
 		generateHexagons(n);
+		
+		if (n == 3){
+			gameBoard = new char[][]{
+									 {'R', 'R', 'R', '+', '+', '+', '-', '-', '-', '-', '-'},
+									 {'+', '-', 'R', '-', '+', '-', '+', '-', '-', '-', '-'},
+									 {'R', 'R', 'R', '+', '+', '+', '+', '+', '-', '-', '-'},
+									 {'+', '-', '+', '-', '+', '-', '+', '-', '+', '-', '-'},
+									 {'+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '-'},
+									 {'+', '-', '+', '-', '+', '-', '+', '-', '+', '-', '+'},
+									 {'-', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+'},
+									 {'-', '-', '+', '-', '+', '-', '+', '-', '+', '-', '+'},
+									 {'-', '-', '-', '+', '+', '+', '+', '+', '+', '+', '+'},
+									 {'-', '-', '-', '-', '+', '-', '+', '-', '+', '-', '+'},
+									 {'-', '-', '-', '-', '-', '+', '+', '+', '+', '+', '+'},
+									};
+		}
+		else if (n == 2){
+			gameBoard = new char[][]{
+									 {'+', '+', '+', '+', '-', '-', '-'},
+									 {'+', '-', '+', '-', '+', '-', '-'},
+									 {'+', '+', '+', '+', '+', '+', '-'},
+									 {'+', '-', '+', '-', '+', '-', '+'},
+									 {'-', '+', '+', '+', '+', '+', '+'},
+									 {'-', '-', '+', '-', '+', '-', '+'},
+									 {'-', '-', '-', '+', '+', '+', '+'},
+									};
+		}
+		else{
+			throw new Exception();
+		}
+	}
+	
+	public void printBoard(PrintStream output){
+		for (char[] row : gameBoard){
+			for (char column : row){
+				output.print(column + " ");
+			}
+			output.print('\n');
+		}
 	}
 	
 	private void generateHexagons(int n){
@@ -30,13 +72,14 @@ public class GameBoard {
 	/**
 	 * Update the gameboard
 	 * @param m Move
+	 * @param p Piece color
 	 */
 	public void update(Move m, int p){
 		if (p == Piece.BLUE){
-			gameBoard[m.Col][m.Row] = Piece.BLUE;
+			gameBoard[m.Col][m.Row] = 'B';
 		}
 		else{
-			gameBoard[m.Col][m.Row] = Piece.RED;
+			gameBoard[m.Col][m.Row] = 'R';
 		}
 	}
 	
@@ -110,6 +153,7 @@ public class GameBoard {
 		if (count == 6){
 			return true;
 		}
+		System.out.println(count);
 		// Otherwise, hexagon is not captured
 		return false;
 	}
@@ -140,7 +184,7 @@ public class GameBoard {
 		}
 		// Bot Left
 		if (checkValidHexagon((row-2)/2, (col-1)/2)){
-			retHexagons.add(new int[]{(row-2)/2, (col-2)/2});
+			retHexagons.add(new int[]{(row-2)/2, (col-1)/2});
 		}
 		// Bot Right
 		if (checkValidHexagon((row-2)/2, (col-2)/2)){
