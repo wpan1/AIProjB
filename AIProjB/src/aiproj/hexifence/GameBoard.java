@@ -53,6 +53,7 @@ public class GameBoard {
 			output.print('\n');
 		}
 	}
+<<<<<<< HEAD
 	
 	private void generateHexagons(int n){
 		if (n == 2){
@@ -99,6 +100,54 @@ public class GameBoard {
 	}
 	
 	/**
+=======
+	
+	private void generateHexagons(int n){
+		if (n == 2){
+			hexagons = new int[][] {{0,0},{0,1},
+									{1,0},{1,1},{1,2},
+									{2,1},{2,2}};
+		}
+		else if (n == 3){
+			hexagons = new int[][] {{0,0},{0,1},{0,2},
+									{1,0},{1,1},{1,2},{1,3},
+									{2,0},{2,1},{2,2},{2,3},{2,4},
+									{3,1},{3,2},{3,3},{3,4},
+									{4,2},{4,3},{4,4}};		
+		}
+	}
+	
+	/**
+	 * Update the gameboard
+	 * @param m Move
+	 * @param p Piece color
+	 */
+	public void update(Move m, int p){
+		if (p == Piece.BLUE){
+			gameBoard[m.Col][m.Row] = 'B';
+		}
+		else{
+			gameBoard[m.Col][m.Row] = 'R';
+		}
+	}
+	
+	/**
+	 * Checks if move is valid in current GameBoard state
+	 * @param m Move
+	 * @return boolean value if valid
+	 */
+	public boolean checkValid(Move m){
+		// Check if space is open
+		if (gameBoard[m.Col][m.Row] == '+'){
+			// If open, move is valid
+			return true;
+		}
+		// If space is not open or taken, move is invalid
+		return false;
+	}
+	
+	/**
+>>>>>>> master
 	 * Check if move captures a hexagon
 	 * @param m Move
 	 * @return boolean value if capturable
@@ -211,5 +260,8 @@ public class GameBoard {
 	
 	
 	
+<<<<<<< HEAD
 	
+=======
+>>>>>>> master
 }
