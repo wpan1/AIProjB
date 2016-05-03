@@ -7,6 +7,7 @@ public class Samuely2 implements Player, Piece {
 	int pieceColor;
 	int oppPieceColor;
 	
+	
 	@Override
 	public int init(int n, int p) {
 		try{
@@ -17,6 +18,8 @@ public class Samuely2 implements Player, Piece {
 			}else{
 				oppPieceColor = Piece.BLUE;
 			}
+			gameBoard.gameState = Piece.EMPTY;
+			
 			return 0;
 		}
 		catch(Exception e){
@@ -32,26 +35,57 @@ public class Samuely2 implements Player, Piece {
 
 	@Override
 	public int opponentMove(Move m) {
-		// TODO Auto-generated method stub
-		if (!gameBoard.checkCapture(m)){
-			return -1;
-		}
-		gameBoard.update(m, oppPieceColor);
+
+		//Check if move is valid
 		if (!gameBoard.checkValid(m)){
+			this.gameBoard.gameState = Piece.INVALID;
 			return -1;
 		}
+		//Update the board state since move m is valid
+		this.gameBoard.update(m);
+		
+		//Check if move m captures any hexagons
+		//return 0 if none captured
+		if (!gameBoard.checkCapture(m)){
+			return 0;
+		}
+		//return 1 if move is valid and a hexagon is captured by move m
 		return 1;
 	}
 
 	@Override
 	public int getWinner() {
-		// TODO Auto-generated method stub
-		return 0;
+		if (this.gameBoard.totalMovesLeft == 0 || this.gameBoard.gameState == Piece.INVALID){
+			//Perform end game checks only if there are no more moves to be played or
+			//the game ended due to an invalid move
+			int oppCount = 0;
+			int ourCount = 0;
+			for (int player : this.gameBoard.capturedMap.values()){
+				if (player == this.pieceColor){
+					ourCount++;
+				}
+				else{
+					oppCount++;
+				}
+			}
+			if (oppCount > ourCount){
+				return this.oppPieceColor;
+			}
+			else if (oppCount == ourCount){
+				return Piece.DEAD;
+			}
+			else{
+				return this.pieceColor;
+			}
+		}
+		//Game still in progress
+		return Piece.EMPTY;
 	}
 
+	
 	@Override
 	public void printBoard(PrintStream output) {
-		// TODO Auto-generated method stub
+		gameBoard.printBoard(output);
 
 	}
 
