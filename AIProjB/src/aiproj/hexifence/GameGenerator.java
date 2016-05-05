@@ -8,8 +8,7 @@ public class GameGenerator {
 	private static Player P2;
 	private static Move lastPlayedMove;
 	
-	public static ArrayList<Move> runGame() {
-		ArrayList<Move> moveSet = new ArrayList<Move>();
+	public char runGame(ArrayList<Move> moveSet) {
 		
 		lastPlayedMove = new Move();
 		int NumberofMoves = 0;
@@ -138,7 +137,7 @@ public class GameGenerator {
 		System.out.println("Referee Finished !");
 	
 		
-		return moveSet;
+		return P1.getWinner() == Piece.BLUE ? 'T' : 'F';
 	}
 
 }

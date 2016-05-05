@@ -153,24 +153,78 @@ public class GameBoard {
 	public boolean checkCapture(Move m){
 		// Get all possible hexagons caputed by this move
 		ArrayList<int[]> hexagons = getHexagons(m);
+		boolean flag = false;
 		for (int[] hexagon : hexagons){
 			// If hexagon is capturable, return true
-			if (checkCapturableHexgon(hexagon)){
+			if (checkCapturableHexagon(hexagon)){
+				flag = true;
+				if (hexagon[0] == 0 && hexagon[1] == 0) gameBoard[1][1] = (m.P == Piece.BLUE) ? 'b' : 'r';
+				if (hexagon[0] == 0 && hexagon[1] == 1) gameBoard[1][3] = (m.P == Piece.BLUE) ? 'b' : 'r';
+				if (hexagon[0] == 1 && hexagon[1] == 0) gameBoard[3][1] = (m.P == Piece.BLUE) ? 'b' : 'r';
+				if (hexagon[0] == 1 && hexagon[1] == 1) gameBoard[3][3] = (m.P == Piece.BLUE) ? 'b' : 'r';
+				if (hexagon[0] == 1 && hexagon[1] == 2) gameBoard[3][5] = (m.P == Piece.BLUE) ? 'b' : 'r';
+				if (hexagon[0] == 2 && hexagon[1] == 1) gameBoard[5][3] = (m.P == Piece.BLUE) ? 'b' : 'r';
+				if (hexagon[0] == 2 && hexagon[1] == 2) gameBoard[5][5] = (m.P == Piece.BLUE) ? 'b' : 'r';
+				
 				this.capturedMap.put(hexagon, m.P);
-				return true;
 			}
 		}
+		//a hexagon was captured
+		if (flag) return true;
 		// Otherwise, hexagon/s at the Move m are not captured
 		return false;
 	}
 	
+//	//Method below assumes the move to be made is valid
+//	private boolean checkCapturableHexagon(int[] hexagon){
+//		int x = hexagon[0], y = hexagon[1];
+//		int count = 0;
+//		
+//		//Right top
+//		if (gameBoard[2*x][2*y+1] != '+'){
+//			count++;
+//		}
+//		// Left top
+//		if (gameBoard[2*x][2*y] != '+'){
+//			count ++;
+//		}
+//		// Right 
+//		if (gameBoard[2*x+1][2*y+2] != '+'){
+//			count ++;
+//		}
+//		// Left
+//		if (gameBoard[2*x+1][2*y] != '+'){
+//			count ++;
+//		}
+//		// Left Bottom
+//		if (gameBoard[2*x+2][2*y+1] != '+'){
+//			count ++;
+//		}
+//		// Right Bottom
+//		if (gameBoard[2*x+2][2*y+2] != '+'){
+//			count ++;
+//		}
+//		
+//	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
-	 * Check if hexagon is capturable
+	 * Check if hexagon is capturable. Called after latest move added
 	 * @param int[] hexagon parameter for hexagon
 	 * @return true if capturable
 	 */
 
-	private boolean checkCapturableHexgon(int[] hexagon){
+	private boolean checkCapturableHexagon(int[] hexagon){
 		int x = hexagon[0], y = hexagon[1];
 		// Count of surrounding colored edges
 		int count = 0;
@@ -202,46 +256,118 @@ public class GameBoard {
 		if (count == 6){
 			return true;
 		}
-		System.out.println(count);
+		//System.out.println("Count" + count);
 		// Otherwise, hexagon is not captured
 		return false;
 	}
 	
-	/**
-	 * Get all possible hexagons capturable with Move m
-	 * @param m Move
-	 * @return array of all hexagons at Move m
-	 */
+	
 	private ArrayList<int[]> getHexagons(Move m){
-		ArrayList<int[]> retHexagons = new ArrayList<int[]>();
-		int col = m.Col, row = m.Row;
-		// Right Top
-		if (checkValidHexagon(row/2, (col-1)/2)){
-			retHexagons.add(new int[]{row/2, (col-1)/2});
+		ArrayList<int[]> capturableHexagons = new ArrayList<int[]>();
+		int x = m.Row;
+		int y = m.Col;
+		for (int[] hexagon : hexagons){
+			//Check top left
+			if (hexagon[0]*2 == x && hexagon[1]*2 == y){
+				if (!capturableHexagons.contains(hexagon)) capturableHexagons.add(hexagon);
+			}
+			//Check top right
+			if (hexagon[0]*2 == x && (hexagon[1]*2 +1) == y){
+				if (!capturableHexagons.contains(hexagon)) capturableHexagons.add(hexagon);
+			}
+			//Check left
+			if ((hexagon[0]*2 + 1) == x && hexagon[1]*2 == y){
+				if (!capturableHexagons.contains(hexagon)) capturableHexagons.add(hexagon);
+			}
+			//Check right
+			if ((hexagon[0]*2 + 1) == x && (hexagon[1]*2 + 2) == y){
+				if (!capturableHexagons.contains(hexagon)) capturableHexagons.add(hexagon);
+			}
+			//Check bottom left
+			if ((hexagon[0]*2 + 2) == x && (hexagon[1]*2 + 1) == y){
+				if (!capturableHexagons.contains(hexagon)) capturableHexagons.add(hexagon);
+			}
+			//Check bottom right
+			if ((hexagon[0]*2 + 2) == x && (hexagon[1]*2 + 2) == y){
+				if (!capturableHexagons.contains(hexagon)) capturableHexagons.add(hexagon);
+			}
 		}
-		// Left Top
-		if (checkValidHexagon(row/2, col/2)){
-			retHexagons.add(new int[]{row/2, col/2});
+		
+		if (capturableHexagons.size() > 2){
+			System.out.println("getHexagons fked up.");
 		}
-		// Right
-		if (checkValidHexagon((row-1)/2, (col-2)/2)){
-			retHexagons.add(new int[]{(row-1)/2, (col-2)/2});
-		}
-		// Left
-		if (checkValidHexagon((row-1)/2, col/2)){
-			retHexagons.add(new int[]{(row-1)/2, col/2});
-		}
-		// Bot Left
-		if (checkValidHexagon((row-2)/2, (col-1)/2)){
-			retHexagons.add(new int[]{(row-2)/2, (col-1)/2});
-		}
-		// Bot Right
-		if (checkValidHexagon((row-2)/2, (col-2)/2)){
-			retHexagons.add(new int[]{(row-2)/2, (col-2)/2});
-		}
-		// Convert to correct format
-		return retHexagons;
+//		System.out.printf("(%d, %d): num hexagons: %d\n", x, y, capturableHexagons.size());
+		return capturableHexagons;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//	Doesn't work, some of the math fks up if you do it this way
+//	/**
+//	 * Get all possible hexagons capturable with Move m
+//	 * @param m Move
+//	 * @return array of all hexagons at Move m
+//	 */
+//	private ArrayList<int[]> getHexagons(Move m){
+//		ArrayList<int[]> retHexagons = new ArrayList<int[]>();
+//		int col = m.Col, row = m.Row;
+//		// Right Top
+//		if (checkValidHexagon(row/2, (col-1)/2)){
+//			int[] o = new int[]{row/2, (col-1)/2};
+//			if (!(retHexagons.contains(o))){
+//				retHexagons.add(o);
+//			}
+//		}
+//		// Left Top
+//		if (checkValidHexagon(row/2, col/2)){
+//			int[] o = new int[]{row/2, col/2};
+//			if (!retHexagons.contains(o)) retHexagons.add(o);
+//		}
+//		// Right
+//		if (checkValidHexagon((row-1)/2, (col-2)/2)){
+//			int[] o = new int[]{(row-1)/2, (col-2)/2};
+//			if (!retHexagons.contains(o)) retHexagons.add(o);
+//		}
+//		// Left
+//		if (checkValidHexagon((row-1)/2, col/2)){
+//			int[] o = new int[]{(row-1)/2, col/2};
+//			if (!retHexagons.contains(o)) retHexagons.add(o);
+//		}
+//		// Bot Left
+//		if (checkValidHexagon((row-2)/2, (col-1)/2)){
+//			int[] o = new int[]{(row-2)/2, (col-1)/2};
+//			if (!retHexagons.contains(o)) retHexagons.add(o);
+//		}
+//		// Bot Right
+//		if (checkValidHexagon((row-2)/2, (col-2)/2)){
+//			retHexagons.add(new int[]{(row-2)/2, (col-2)/2});
+//		}
+//		// Convert to correct format
+//		for (int[] h: retHexagons){
+//			System.out.println(h[0] + ", "  + h[1]);
+//		}
+//		return retHexagons;
+//	}
 
 	/**
 	 * Check if hexagon is valid
