@@ -29,8 +29,47 @@ public class Samuely2 implements Player, Piece {
 
 	@Override
 	public Move makeMove() {
-		// TODO Auto-generated method stub
-		return null;
+		Move m = new Move();
+		m.P = this.pieceColor;
+		
+		//get all available moves
+		int availableCount = 0;
+		for (char cRow[] : gameBoard.gameBoard){
+			for (char c : cRow){
+				if (c == '+'){
+					availableCount++;
+				}
+			}
+		}
+		
+		//Get a random move from the set of available moves
+		boolean flag = false;
+		int rand = (int)(Math.random()*(availableCount-1));
+		int row = 0;
+		loop1: for (char[] cRow : gameBoard.gameBoard){
+			int col = 0;
+			for (char c : cRow){
+				if (c == '+'){
+					if (rand == 0){
+						m.Row = row;
+						m.Col = col;
+						flag = true;
+						break loop1;
+					}
+					rand--;
+				}
+				col++;
+			}
+			row++;
+		}
+		if (flag){
+			gameBoard.update(m);
+			return m;
+		}
+		else{
+			System.out.println("Fked up");
+			return m;
+		}
 	}
 
 	@Override

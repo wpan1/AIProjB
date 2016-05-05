@@ -20,7 +20,9 @@ public class Move{
 	}
 
 	public Move() {
-		// TODO Auto-generated constructor stub
 	}
 		
+	public void printMove(){
+		System.out.println("Player " + P + ": (" + Row + "," + Col + ")");
+	}
 }

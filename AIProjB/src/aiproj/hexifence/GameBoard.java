@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GameBoard {
+
 	char[][] gameBoard;
 	int N;
 	int[][] hexagons;
@@ -32,6 +33,7 @@ public class GameBoard {
 									 {'-', '-', '-', '-', '+', '-', '+', '-', '+', '-', '+'},
 									 {'-', '-', '-', '-', '-', '+', '+', '+', '+', '+', '+'},
 									};
+									
 			this.totalMovesLeft = 72;
 			
 			int count = 0;
@@ -118,10 +120,10 @@ public class GameBoard {
 		}
 		
 		if (m.P == Piece.BLUE){
-			gameBoard[m.Col][m.Row] = 'B';
+			gameBoard[m.Row][m.Col] = 'B';
 		}
 		else{
-			gameBoard[m.Col][m.Row] = 'R';
+			gameBoard[m.Row][m.Col] = 'R';
 		}
 		
 		this.totalMovesLeft--;
@@ -135,7 +137,7 @@ public class GameBoard {
 	 */
 	public boolean checkValid(Move m){
 		// Check if space is open
-		if (gameBoard[m.Col][m.Row] == '+'){
+		if (gameBoard[m.Row][m.Col] == '+'){
 			// If open, move is valid
 			return true;
 		}
@@ -167,6 +169,7 @@ public class GameBoard {
 	 * @param int[] hexagon parameter for hexagon
 	 * @return true if capturable
 	 */
+
 	private boolean checkCapturableHexgon(int[] hexagon){
 		int x = hexagon[0], y = hexagon[1];
 		// Count of surrounding colored edges
