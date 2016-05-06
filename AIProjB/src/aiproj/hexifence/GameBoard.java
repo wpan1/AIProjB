@@ -153,7 +153,7 @@ public class GameBoard {
 		ArrayList<Integer> moveKey = new ArrayList<Integer>(Arrays.asList(m.Row, m.Col));
 		// Decrement all hexagons with edge m
 		for (Hexagon hex : hexagonMap.get(moveKey)){
-			if (hex.remainingEdges == 1){
+			if (hex.remainingEdges <= 1){
 				return hex;
 			}
 		}
