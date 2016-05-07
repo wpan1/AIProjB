@@ -74,7 +74,6 @@ public class BasicAgent implements Player, Piece {
 			}
 			row += 1;
 		}
-		System.out.println("randMove");
 		gameBoard.update(randMove);
 		return randMove;
 	}

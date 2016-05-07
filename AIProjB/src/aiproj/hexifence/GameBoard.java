@@ -151,7 +151,7 @@ public class GameBoard {
 	public boolean checkCapture(Move m){
 		// Convert to ArrayList for key
 		ArrayList<Integer> moveKey = new ArrayList<Integer>(Arrays.asList(m.Row, m.Col));
-		// Decrement all hexagons with edge m
+		// Check all hexagons with edge m
 		for (Hexagon hex : hexagonMap.get(moveKey)){
 			if (hex.remainingEdges <= 1){
 				return true;
