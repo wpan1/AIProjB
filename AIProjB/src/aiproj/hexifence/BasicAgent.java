@@ -97,19 +97,19 @@ public class BasicAgent implements Player, Piece {
 			//the game ended due to an invalid move
 			int oppCount = 0;
 			int ourCount = 0;
-			HashMap<int[], Integer> a = this.gameBoard.capturedMap;
-			for (int player : this.gameBoard.capturedMap.values()){
-				if (player == this.pieceColor){
-					ourCount++;
-				}
-				else{
-					oppCount++;
-				}
+			if (pieceColor == Piece.BLUE){
+				ourCount = gameBoard.blueCap;
+				oppCount = gameBoard.redCap;
+			}else{
+				ourCount = gameBoard.redCap;
+				oppCount = gameBoard.blueCap;
 			}
 			if (oppCount > ourCount){
 				return this.oppPieceColor;
 			}
 			else if (oppCount == ourCount){
+				System.out.println(oppCount);
+				System.out.println(ourCount);
 				return Piece.DEAD;
 			}
 			else{

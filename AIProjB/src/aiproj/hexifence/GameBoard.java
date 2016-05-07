@@ -13,8 +13,8 @@ public class GameBoard {
 	int totalMovesLeft;
 	int gameState;
 	HashMap<ArrayList<Integer>,ArrayList<Hexagon>> hexagonMap;
-	int blueCap = 0;
-	int redCap = 0;
+	public int blueCap = 0;
+	public int redCap = 0;
 	
 	//Constructor
 	public GameBoard(int n) throws Exception{
