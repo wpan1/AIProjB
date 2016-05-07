@@ -64,8 +64,8 @@ public class Samuely2 implements Player, Piece {
 			row++;
 		}
 		if (flag){
-			gameBoard.update(m);
 			gameBoard.checkCapture(m);
+			gameBoard.update(m);
 			return m;
 		}
 		else{
@@ -89,6 +89,8 @@ public class Samuely2 implements Player, Piece {
 			this.gameBoard.update(m);
 			return 0;
 		}
+		
+		this.gameBoard.update(m);
 		//return 1 if move is valid and a hexagon is captured by move m
 		this.gameBoard.update(m);
 		return 1;
