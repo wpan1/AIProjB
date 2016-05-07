@@ -253,7 +253,7 @@ public class GameBoard {
 			count += 1;
 		}
 		// If 6 edges are surrounding, hexagon is captured
-		if (count == 6){
+		if (count == 5){
 			return true;
 		}
 		//System.out.println("Count" + count);

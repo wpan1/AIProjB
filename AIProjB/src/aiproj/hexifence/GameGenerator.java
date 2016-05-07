@@ -15,7 +15,7 @@ public class GameGenerator {
 		int dimension = 2;
 		int boardEmptyPieces=(dimension)*(9*dimension-3);
 		System.out.println("Referee started !");
-		P1 = new Samuely2();
+		P1 = new BasicAgent();
 		P2 = new Samuely2();
 		
 		P1.init(2, Piece.BLUE);
