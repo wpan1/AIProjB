@@ -148,16 +148,16 @@ public class GameBoard {
 	 * @param m Move
 	 * @return boolean true if capturable
 	 */
-	public Hexagon checkCapture(Move m){
+	public boolean checkCapture(Move m){
 		// Convert to ArrayList for key
 		ArrayList<Integer> moveKey = new ArrayList<Integer>(Arrays.asList(m.Row, m.Col));
 		// Decrement all hexagons with edge m
 		for (Hexagon hex : hexagonMap.get(moveKey)){
 			if (hex.remainingEdges <= 1){
-				return hex;
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
 	
 	/**

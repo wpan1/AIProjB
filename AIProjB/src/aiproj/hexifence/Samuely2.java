@@ -85,7 +85,7 @@ public class Samuely2 implements Player, Piece {
 	
 		//Check if move m captures any hexagons
 		//return 0 if none captured
-		if (gameBoard.checkCapture(m) == null){
+		if (gameBoard.checkCapture(m) == false){
 			this.gameBoard.update(m);
 			return 0;
 		}
