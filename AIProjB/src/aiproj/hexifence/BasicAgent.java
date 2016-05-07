@@ -2,7 +2,6 @@ package aiproj.hexifence;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class BasicAgent implements Player, Piece {
 	GameBoard gameBoard;
