@@ -45,22 +45,22 @@ public class MinimaxAgent implements Player{
 		}
 		// Use minimax
 		System.out.println("MINIMAX");
-		int[] moveDet = minimax(MINIMAX_DEPTH, pieceColor);
+		int[] moveDet = minimax(MINIMAX_DEPTH, pieceColor, Integer.MIN_VALUE, Integer.MAX_VALUE);
 		Move move = new Move(moveDet[2], moveDet[1], pieceColor);
 		gameBoard.update(move);
 		return move;
 	}
 	
-	private int[] minimax(int depth, int currPieceColor) {
+	private int[] minimax(int depth, int currPieceColor, int alpha, int beta) {
 		// We are maximising, while opponent is minimising
-		int bestScore = (currPieceColor == pieceColor) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-		int currentScore;
+		int currScore;
 	    int bestRow = -1;
 	    int bestCol = -1;
 	    
 	    // Gameover or depth reached, evaluate score
 		if (gameBoard.totalMovesLeft == 0 || depth == 0){
-			bestScore = evaluateBoard();
+			currScore = evaluateBoard();
+			return new int[]{currScore, bestRow, bestCol};
 		}
 		else{
 			// Iterate through all moves
@@ -69,29 +69,32 @@ public class MinimaxAgent implements Player{
 				gameBoard.update(new Move(move.get(1),move.get(0), currPieceColor));
 				if (currPieceColor == pieceColor){
 					// Maximising score
-					currentScore = minimax(depth - 1, oppPieceColor)[0];
+					currScore = minimax(depth - 1, oppPieceColor, alpha, beta)[0];
 					// Update score values
-					if (currentScore > bestScore){
-						bestScore = currentScore;
+					if (currScore > alpha){
+						alpha = currScore;
 						bestRow = move.get(0);
 						bestCol = move.get(1);
 					}
 				}else{
 					// Minimising score
-					currentScore = minimax(depth - 1, pieceColor)[0];
+					currScore = minimax(depth - 1, pieceColor, alpha, beta)[0];
 					// Update score values
-					if (currentScore < bestScore){
-						bestScore = currentScore;
+					if (currScore < beta){
+						beta = currScore;
 						bestRow = move.get(0);
 						bestCol = move.get(1);
 					}
 				}
 				// Revert board back to original state
 				gameBoard.remove(move);
+	            // Stop
+	            if (alpha >= beta) break;
 			}
 		}
+		currScore = (currPieceColor == pieceColor) ? alpha : beta;
 		// Return score values
-		return new int[]{bestScore, bestRow, bestCol};
+		return new int[]{currScore, bestRow, bestCol};
 	}
 	
 	private int evaluateBoard(){
