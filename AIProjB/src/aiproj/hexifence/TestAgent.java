@@ -2,6 +2,9 @@ package aiproj.hexifence;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
 
@@ -32,7 +35,7 @@ public class TestAgent implements Player{
 	@Override
 	public Move makeMove() {
 		ArrayList<Move> possMoves = new ArrayList<Move>();
-		for (ArrayList<Integer> move : gameBoard.hexagonMap.keySet()){
+		for (ArrayList<Integer> move : gameBoard.getMoves()){
 			for (Hexagon hex : gameBoard.hexagonMap.get(move)){
 				if (hex.remainingEdges > 2){
 					Move newmove = new Move(move.get(1), move.get(0), pieceColor);
@@ -41,9 +44,50 @@ public class TestAgent implements Player{
 			}
 		}
 		Random rand = new Random();
+		
 		if (possMoves.size() == 0){
-			return null;
+			ArrayList<ArrayList<Integer>> moves = gameBoard.getMoves();
+			HashMap<ArrayList<Hexagon>,ArrayList<ArrayList<Integer>>> links = new HashMap<ArrayList<Hexagon>,ArrayList<ArrayList<Integer>>>();
+			ArrayList<Hexagon> tempLink = null;
+			// Iterate through moves
+			for (ArrayList<Integer> move : moves){
+				// Iterate through hexagons mapping to move
+				for (Hexagon hex : gameBoard.hexagonMap.get(move)){
+					// Iterate through links
+					linkloop : for (ArrayList<Hexagon> link : links.keySet()){
+						// Iterate though hexagon in links
+						for (Hexagon hex2 : link){
+							if (hex.equals(hex2)){
+								tempLink = link;
+								break linkloop;
+							}
+						}
+					}
+				}
+				if (tempLink != null){
+					tempLink.removeAll(gameBoard.hexagonMap.get(move));
+					tempLink.addAll(gameBoard.hexagonMap.get(move));
+					links.get(tempLink).add(move);
+					tempLink = null;
+				}else{
+					links.put(gameBoard.hexagonMap.get(move), moves);
+				}
+			}
+			int minsize = Integer.MIN_VALUE;
+			ArrayList<Hexagon> minhexList = null;
+			for (ArrayList<Hexagon> hex : links.keySet()){
+				if (hex.size() > minsize){
+					minhexList = hex;
+					minsize = hex.size();
+				}
+			}
+			for (Hexagon hex : minhexList){
+				Move mv = new Move (links.get(hex).get(0).get(1),
+						links.get(hex).get(0).get(0),
+						pieceColor);
+			}
 		}
+		
 		int randint = rand.nextInt(possMoves.size());
 		gameBoard.update(possMoves.get(randint));
 		return possMoves.get(randint);

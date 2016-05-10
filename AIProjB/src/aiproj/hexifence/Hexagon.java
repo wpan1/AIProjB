@@ -13,4 +13,22 @@ public class Hexagon{
 		this.y = y;
 		this.remainingEdges = 6;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+	    if (obj == null) {
+	        return false;
+	    }
+	    if (!Hexagon.class.isAssignableFrom(obj.getClass())) {
+	        return false;
+	    }
+	    final Hexagon other = (Hexagon) obj;
+	    if (this.x != other.x) {
+	        return false;
+	    }
+	    if (this.y != other.y){
+	    	return false;
+	    }
+	    return true;
+	}
 }

@@ -2,6 +2,8 @@ package aiproj.hexifence;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -10,7 +12,7 @@ public class MinimaxAgent implements Player{
 	public GameBoard gameBoard;
 	int pieceColor;
 	int oppPieceColor;
-	private static final int MINIMAX_DEPTH = 6;
+	private static final int MINIMAX_DEPTH = 2;
 	
 	@Override
 	public int init(int n, int p) {
@@ -34,7 +36,7 @@ public class MinimaxAgent implements Player{
 	@Override
 	public Move makeMove(){
 		// When to start using minimax
-		if (gameBoard.totalMovesLeft > 12){
+		if (gameBoard.totalMovesLeft > 10){
 			// If not below totalMovesLeft, play a random move
 			ArrayList<ArrayList<Integer>> moves = gameBoard.getMoves();
 			int rand = (int) (Math.random()*moves.size());
@@ -47,6 +49,7 @@ public class MinimaxAgent implements Player{
 		System.out.println("MINIMAX");
 		int[] moveDet = minimax(MINIMAX_DEPTH, pieceColor, Integer.MIN_VALUE, Integer.MAX_VALUE);
 		Move move = new Move(moveDet[2], moveDet[1], pieceColor);
+		System.out.println(moveDet[0]);
 		gameBoard.update(move);
 		return move;
 	}
@@ -58,7 +61,7 @@ public class MinimaxAgent implements Player{
 	    int bestCol = -1;
 	    
 	    // Gameover or depth reached, evaluate score
-		if (gameBoard.totalMovesLeft == 0 || depth == 0){
+		if (gameBoard.totalMovesLeft == 0){
 			currScore = evaluateBoard();
 			return new int[]{currScore, bestRow, bestCol};
 		}
@@ -66,19 +69,30 @@ public class MinimaxAgent implements Player{
 			// Iterate through all moves
 			for (ArrayList<Integer> move : gameBoard.getMoves()){
 				// Update the board for the current move
-				gameBoard.update(new Move(move.get(1),move.get(0), currPieceColor));
+				Move move_2 = new Move(move.get(1),move.get(0), currPieceColor);
+				boolean captureHex = gameBoard.checkCapture(move_2);
+				gameBoard.update(move_2);
+				// Maximizing score
 				if (currPieceColor == pieceColor){
-					// Maximising score
-					currScore = minimax(depth - 1, oppPieceColor, alpha, beta)[0];
+					// If move captures hexagon, maximize again
+					if (captureHex){
+						currScore = minimax(depth - 1, pieceColor, alpha, beta)[0];
+					}
+					else currScore = minimax(depth - 1, oppPieceColor, alpha, beta)[0];
 					// Update score values
 					if (currScore > alpha){
 						alpha = currScore;
 						bestRow = move.get(0);
 						bestCol = move.get(1);
 					}
-				}else{
-					// Minimising score
-					currScore = minimax(depth - 1, pieceColor, alpha, beta)[0];
+				}
+				// Minimizing score
+				else if (currPieceColor == oppPieceColor){
+					// If move captures hexagon, minimize again
+					if (captureHex){
+						currScore = minimax(depth - 1, oppPieceColor, alpha, beta)[0];
+					}
+					else currScore = minimax(depth - 1, pieceColor, alpha, beta)[0];
 					// Update score values
 					if (currScore < beta){
 						beta = currScore;
@@ -88,19 +102,61 @@ public class MinimaxAgent implements Player{
 				}
 				// Revert board back to original state
 				gameBoard.remove(move);
-	            // Stop
+	            // A/B pruning
 	            if (alpha >= beta) break;
 			}
 		}
-		currScore = (currPieceColor == pieceColor) ? alpha : beta;
 		// Return score values
-		return new int[]{currScore, bestRow, bestCol};
+		return new int[]{(currPieceColor == pieceColor) ? alpha : beta, bestRow, bestCol};
 	}
 	
 	private int evaluateBoard(){
 		if (gameBoard.blueCap > gameBoard.redCap)
 			return 1;
-		return 0;
+		return -1;
+	}
+	
+	private int evaluateBoard2(){
+		ArrayList<ArrayList<Integer>> moves = gameBoard.getMoves();
+		ArrayList<ArrayList<Hexagon>> links = new ArrayList<ArrayList<Hexagon>>();
+		ArrayList<Hexagon> tempLink = null;
+		// Iterate through moves
+		for (ArrayList<Integer> move : moves){
+			// Iterate through hexagons mapping to move
+			for (Hexagon hex : gameBoard.hexagonMap.get(move)){
+				// Iterate through links
+				linkloop : for (ArrayList<Hexagon> link : links){
+					// Iterate though hexagon in links
+					for (Hexagon hex2 : link){
+						if (hex.equals(hex2)){
+							tempLink = link;
+							break linkloop;
+						}
+					}
+				}
+			}
+			if (tempLink != null){
+				tempLink.removeAll(gameBoard.hexagonMap.get(move));
+				tempLink.addAll(gameBoard.hexagonMap.get(move));
+				tempLink = null;
+			}else{
+				links.add(gameBoard.hexagonMap.get(move));
+			}
+
+		}
+		Collections.sort(links, new Comparator<ArrayList>(){
+		    public int compare(ArrayList a1, ArrayList a2) {
+		        return a1.size() - a2.size(); // assumes you want biggest to smallest
+		    }
+		});
+		boolean add = false;
+		int score = 0;
+		for (ArrayList<Hexagon> link : links){
+			if (add) score += link.size();
+			else score -= link.size();
+			add = !add;
+		}
+		return score;
 	}
 
 	@Override
