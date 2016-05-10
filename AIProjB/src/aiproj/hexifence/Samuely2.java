@@ -1,6 +1,7 @@
 package aiproj.hexifence;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Samuely2 implements Player, Piece {
@@ -30,48 +31,12 @@ public class Samuely2 implements Player, Piece {
 
 	@Override
 	public Move makeMove() {
-		Move m = new Move();
-		m.P = this.pieceColor;
+		ArrayList<ArrayList<Integer>> moves = gameBoard.getMoves();
+		int rand = (int) (Math.random()*moves.size());
 		
-		//get all available moves
-		int availableCount = 0;
-		for (char cRow[] : gameBoard.gameBoard){
-			for (char c : cRow){
-				if (c == '+'){
-					availableCount++;
-				}
-			}
-		}
-		
-		//Get a random move from the set of available moves
-		boolean flag = false;
-		int rand = (int)(Math.random()*(availableCount));
-		int row = 0;
-		loop1: for (char[] cRow : gameBoard.gameBoard){
-			int col = 0;
-			for (char c : cRow){
-				if (c == '+'){
-					if (rand == 0){
-						m.Row = row;
-						m.Col = col;
-						flag = true;
-						break loop1;
-					}
-					rand--;
-				}
-				col++;
-			}
-			row++;
-		}
-		if (flag){
-			gameBoard.update(m);
-			gameBoard.checkCapture(m);
-			return m;
-		}
-		else{
-			System.out.println("Fked up");
-			return m;
-		}
+		Move move = new Move(moves.get(rand).get(1),moves.get(rand).get(0),pieceColor);
+		gameBoard.update(move);
+		return move;
 	}
 
 	@Override

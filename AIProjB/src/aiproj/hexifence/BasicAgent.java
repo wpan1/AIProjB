@@ -2,7 +2,6 @@ package aiproj.hexifence;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class BasicAgent implements Player, Piece {
 	GameBoard gameBoard;
@@ -42,30 +41,40 @@ public class BasicAgent implements Player, Piece {
 			for (char move : mRow){
 				// Add move if capturable
 				if (move == '+'){
-					movesLeft.add(new Move(row, col, pieceColor));
+					movesLeft.add(new Move(col, row, pieceColor));
 				}
+				col += 1;
 			}
+			row += 1;
 		}
 	}
 
 	@Override
 	public Move makeMove() {
 		// Return move if capturable
-		int rand = (int)(Math.random()*(movesLeft.size()));
+		int rand = (int) (Math.random()*(gameBoard.totalMovesLeft));
 		Move randMove = null;
 		int row = 0;
-		for (Move move : movesLeft){
-			if (gameBoard.checkCapture(move)){
-				movesLeft.remove(move);
-				gameBoard.update(move);
-				return move;
+		for (char[] mRow : gameBoard.gameBoard){
+			int col = 0;
+			for (char move : mRow){
+				if (move == '+'){
+					Move m = new Move(col, row, this.pieceColor);
+					if (gameBoard.checkCapture(m)){
+						System.out.println("CaptureMove");
+						gameBoard.update(m);
+						return m;
+					}
+					if (rand == 0){
+						randMove = m;
+					}
+					rand -= 1;
+				}
+				col += 1;
 			}
-			if (rand == 0){
-				randMove = move;
-			}
-			rand -= 1;
+			row += 1;
 		}
-		movesLeft.remove(randMove);
+		System.out.println("randMove");
 		gameBoard.update(randMove);
 		return randMove;
 	}
@@ -78,15 +87,15 @@ public class BasicAgent implements Player, Piece {
 			this.gameBoard.gameState = Piece.INVALID;
 			return -1;
 		}
-		//Update the board state since move m is valid
-		this.gameBoard.update(m);
 		
 		//Check if move m captures any hexagons
 		//return 0 if none captured
 		if (!gameBoard.checkCapture(m)){
+			this.gameBoard.update(m);
 			return 0;
 		}
 		//return 1 if move is valid and a hexagon is captured by move m
+		this.gameBoard.update(m);
 		return 1;
 	}
 
@@ -97,19 +106,19 @@ public class BasicAgent implements Player, Piece {
 			//the game ended due to an invalid move
 			int oppCount = 0;
 			int ourCount = 0;
-			HashMap<int[], Integer> a = this.gameBoard.capturedMap;
-			for (int player : this.gameBoard.capturedMap.values()){
-				if (player == this.pieceColor){
-					ourCount++;
-				}
-				else{
-					oppCount++;
-				}
+			if (pieceColor == Piece.BLUE){
+				ourCount = gameBoard.blueCap;
+				oppCount = gameBoard.redCap;
+			}else{
+				ourCount = gameBoard.redCap;
+				oppCount = gameBoard.blueCap;
 			}
 			if (oppCount > ourCount){
 				return this.oppPieceColor;
 			}
 			else if (oppCount == ourCount){
+				System.out.println(oppCount);
+				System.out.println(ourCount);
 				return Piece.DEAD;
 			}
 			else{

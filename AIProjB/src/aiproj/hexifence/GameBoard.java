@@ -3,7 +3,9 @@ package aiproj.hexifence;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
 
 public class GameBoard {
 
@@ -13,6 +15,7 @@ public class GameBoard {
 	int totalMovesLeft;
 	int gameState;
 	HashMap<ArrayList<Integer>,ArrayList<Hexagon>> hexagonMap;
+	ArrayList<Hexagon> hexagonList;
 	int blueCap = 0;
 	int redCap = 0;
 	
@@ -22,6 +25,7 @@ public class GameBoard {
 		this.N = n;
 		// Generate a map, mapping every possible move to a hexagon
 		hexagonMap = new HashMap<ArrayList<Integer>,ArrayList<Hexagon>>();
+		hexagonList = new ArrayList<Hexagon>();
 		generateHexagonMap();
 		
 		if (n == 3){
@@ -115,17 +119,62 @@ public class GameBoard {
 			hex.remainingEdges -= 1;
 			// If hexagon caputed, update board and scores
 			if (hex.remainingEdges == 0){
-				updateBoardCap(hex, gameBoard, m.P);
+				updateBoardCap(hex, m.P);
 				if (m.P == Piece.BLUE){
+					hex.capturedBy = Piece.BLUE;
 					blueCap += 1;
 				}else{
+					hex.capturedBy = Piece.RED;
 					redCap += 1;
 				}
 			}
 		}	
 		// Decrement remainingMoves
 		this.totalMovesLeft--;
-		
+	}
+	
+	/**
+	 * Get all possible moves
+	 * @return  ArrayList of possible moves
+	 */
+	public ArrayList<ArrayList<Integer>> getMoves(){
+		ArrayList<ArrayList<Integer>> returnList = new ArrayList<ArrayList<Integer>>();
+		for (ArrayList<Integer> move : hexagonMap.keySet()){
+			if (gameBoard[move.get(0)][move.get(1)] == '+'){
+				returnList.add(move);
+			}
+		}
+		return returnList;
+	}
+	
+	/**
+	 * Remove move played (Used in minimax)
+	 * @throws Exception 
+	 */
+	public void remove(ArrayList<Integer> key){
+		// Get col/row values
+		int row = key.get(0);
+		int col = key.get(1);
+		// Check if board is occupied, remove move
+		if (gameBoard[row][col] == 'B' || gameBoard[row][col] == 'R'){
+			gameBoard[row][col] = '+';
+		}else{
+			System.out.println(gameBoard[row][col]);
+		}
+		// Add back to hexagonMap
+		for (Hexagon hex : hexagonMap.get(key)){
+			if (hex.remainingEdges == 0){
+				if (hex.capturedBy == Piece.BLUE){
+					blueCap -= 1;
+				}else if (hex.capturedBy == Piece.RED){
+					redCap -= 1;
+				}
+			}
+			hex.remainingEdges += 1;
+			removeBoardCap(hex);
+		}
+		hexagonMap.put(key, hexagonMap.get(key));
+		totalMovesLeft += 1;
 	}
 	
 	/**
@@ -166,7 +215,8 @@ public class GameBoard {
 	 * @param gameBoard
 	 * @param P
 	 */
-	public void updateBoardCap(Hexagon hex, char[][] gameBoard, int P){
+	public void updateBoardCap(Hexagon hex, int P){
+		hex.capturedBy = -1;
 		if (hex.x == 0 && hex.y == 0) gameBoard[1][1] = (P == Piece.BLUE) ? 'b' : 'r';
 		if (hex.x == 0 && hex.y == 1) gameBoard[1][3] = (P == Piece.BLUE) ? 'b' : 'r';
 		if (hex.x == 1 && hex.y == 0) gameBoard[3][1] = (P == Piece.BLUE) ? 'b' : 'r';
@@ -174,6 +224,22 @@ public class GameBoard {
 		if (hex.x == 1 && hex.y == 2) gameBoard[3][5] = (P == Piece.BLUE) ? 'b' : 'r';
 		if (hex.x == 2 && hex.y == 1) gameBoard[5][3] = (P == Piece.BLUE) ? 'b' : 'r';
 		if (hex.x == 2 && hex.y == 2) gameBoard[5][5] = (P == Piece.BLUE) ? 'b' : 'r';
+	}
+	
+	/**
+	 * Update the board after removal of Capture
+	 * @param hex
+	 * @param gameBoard
+	 * @param P
+	 */
+	public void removeBoardCap(Hexagon hex){
+		if (hex.x == 0 && hex.y == 0) gameBoard[1][1] = '-';
+		if (hex.x == 0 && hex.y == 1) gameBoard[1][3] = '-';
+		if (hex.x == 1 && hex.y == 0) gameBoard[3][1] = '-';
+		if (hex.x == 1 && hex.y == 1) gameBoard[3][3] = '-';
+		if (hex.x == 1 && hex.y == 2) gameBoard[3][5] = '-';
+		if (hex.x == 2 && hex.y == 1) gameBoard[5][3] = '-';
+		if (hex.x == 2 && hex.y == 2) gameBoard[5][5] = '-';
 	}
 	
 	/**
@@ -187,6 +253,7 @@ public class GameBoard {
 			int x = hexagon[0];
 			int y = hexagon[1];
 			Hexagon newHex = new Hexagon(x,y);
+			hexagonList.add(newHex);
 			// Hashmap needs key as ArrayList because the .equals function
 			// does not check the object's hashcode, and instead checks
 			// the actual values inside. Therefore, two different objects

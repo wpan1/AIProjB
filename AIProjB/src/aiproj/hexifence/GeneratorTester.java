@@ -14,7 +14,7 @@ public class GeneratorTester {
 		MoveMapper mapper = new MoveMapper(2);
 		
 		GameGenerator newGen = new GameGenerator();
-		int gamesToPlay = 30000;
+		int gamesToPlay = 1;
 		while (gamesToPlay > 0){
 			
 			ArrayList<Move> m = new ArrayList<Move>();
