@@ -1,11 +1,13 @@
 package aiproj.hexifence;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 
-public class Samuely2 implements Player, Piece {
+public class BasicAgent implements Player, Piece {
 	GameBoard gameBoard;
 	int pieceColor;
 	int oppPieceColor;
+	ArrayList<Move> movesLeft;
 	
 	
 	@Override
@@ -20,56 +22,59 @@ public class Samuely2 implements Player, Piece {
 			}
 			gameBoard.gameState = Piece.EMPTY;
 			
+			movesLeft = new ArrayList<Move>();
+			genMoves();
+			
 			return 0;
 		}
 		catch(Exception e){
 			return 1;
 		}
 	}
+	
+	public void genMoves(){
+		int row = 0;
+		// Iterate through row
+		for (char[] mRow : gameBoard.gameBoard){
+			int col = 0;
+			// Iterate through column
+			for (char move : mRow){
+				// Add move if capturable
+				if (move == '+'){
+					movesLeft.add(new Move(col, row, pieceColor));
+				}
+				col += 1;
+			}
+			row += 1;
+		}
+	}
 
 	@Override
 	public Move makeMove() {
-		Move m = new Move();
-		m.P = this.pieceColor;
-		
-		//get all available moves
-		int availableCount = 0;
-		for (char cRow[] : gameBoard.gameBoard){
-			for (char c : cRow){
-				if (c == '+'){
-					availableCount++;
-				}
-			}
-		}
-		
-		//Get a random move from the set of available moves
-		boolean flag = false;
-		int rand = (int)(Math.random()*(availableCount-1));
+		// Return move if capturable
+		int rand = (int) (Math.random()*(gameBoard.totalMovesLeft));
+		Move randMove = null;
 		int row = 0;
-		loop1: for (char[] cRow : gameBoard.gameBoard){
+		for (char[] mRow : gameBoard.gameBoard){
 			int col = 0;
-			for (char c : cRow){
-				if (c == '+'){
-					if (rand == 0){
-						m.Row = row;
-						m.Col = col;
-						flag = true;
-						break loop1;
+			for (char move : mRow){
+				if (move == '+'){
+					Move m = new Move(col, row, this.pieceColor);
+					if (gameBoard.checkCapture(m)){
+						gameBoard.update(m);
+						return m;
 					}
-					rand--;
+					if (rand == 0){
+						randMove = m;
+					}
+					rand -= 1;
 				}
-				col++;
+				col += 1;
 			}
-			row++;
+			row += 1;
 		}
-		if (flag){
-			gameBoard.update(m);
-			return m;
-		}
-		else{
-			System.out.println("Fked up");
-			return m;
-		}
+		gameBoard.update(randMove);
+		return randMove;
 	}
 
 	@Override
@@ -80,15 +85,15 @@ public class Samuely2 implements Player, Piece {
 			this.gameBoard.gameState = Piece.INVALID;
 			return -1;
 		}
-		//Update the board state since move m is valid
-		this.gameBoard.update(m);
 		
 		//Check if move m captures any hexagons
 		//return 0 if none captured
 		if (!gameBoard.checkCapture(m)){
+			this.gameBoard.update(m);
 			return 0;
 		}
 		//return 1 if move is valid and a hexagon is captured by move m
+		this.gameBoard.update(m);
 		return 1;
 	}
 
@@ -99,13 +104,12 @@ public class Samuely2 implements Player, Piece {
 			//the game ended due to an invalid move
 			int oppCount = 0;
 			int ourCount = 0;
-			for (int player : this.gameBoard.capturedMap.values()){
-				if (player == this.pieceColor){
-					ourCount++;
-				}
-				else{
-					oppCount++;
-				}
+			if (pieceColor == Piece.BLUE){
+				ourCount = gameBoard.blueCap;
+				oppCount = gameBoard.redCap;
+			}else{
+				ourCount = gameBoard.redCap;
+				oppCount = gameBoard.blueCap;
 			}
 			if (oppCount > ourCount){
 				return this.oppPieceColor;

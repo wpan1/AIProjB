@@ -8,8 +8,7 @@ public class GameGenerator {
 	private static Player P2;
 	private static Move lastPlayedMove;
 	
-	public static ArrayList<Move> runGame() {
-		ArrayList<Move> moveSet = new ArrayList<Move>();
+	public char runGame(ArrayList<Move> moveSet) {
 		
 		lastPlayedMove = new Move();
 		int NumberofMoves = 0;
@@ -17,7 +16,7 @@ public class GameGenerator {
 		int boardEmptyPieces=(dimension)*(9*dimension-3);
 		System.out.println("Referee started !");
 		P1 = new Samuely2();
-		P2 = new Samuely2();
+		P2 = new BasicAgent();
 		
 		P1.init(2, Piece.BLUE);
 		P2.init(2, Piece.RED);
@@ -138,7 +137,7 @@ public class GameGenerator {
 		System.out.println("Referee Finished !");
 	
 		
-		return moveSet;
+		return P1.getWinner() == Piece.BLUE ? 'T' : 'F';
 	}
 
 }
