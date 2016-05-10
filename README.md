@@ -1,5 +1,5 @@
-# AIProjB
-fun times
+# AIProjB NeuralNetwork
+Import from grade
 
 #Tasks to Complete
 Make GameBoard class:
