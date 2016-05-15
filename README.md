@@ -1,13 +1,6 @@
 # AIProjB NeuralNetwork
 Import from grade
 
-#Tasks to Complete
-Make GameBoard class:
-- printBoard() method
-- getWinner() method
-- opponentMove() method
-- init method
-
 #Player:
 - init() - create a GameBoard, check for input errors
 - makeMove() - run algorithms to generate move, update Game State
